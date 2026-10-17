@@ -6,17 +6,24 @@
 //
 
 import UIKit
-    class DetailViewController: UIViewController {
-        
-        @IBOutlet weak var messageLabel: UILabel!
-        var studentName: String = ""
-        var notificationsEnabled: Bool = false
-        var selectedRole: String = ""
-        
-        override func viewDidLoad() {
-            super.viewDidLoad()
+class DetailViewController: UIViewController {
+    
+    @IBOutlet weak var messageLabel: UILabel!
+    var studentName: String = ""
+    var notificationsEnabled: Bool = false
+    var selectedRole: String = ""
+    
+    var announcement: CampusAnnouncement?
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if let announcement = announcement {
+            title = announcement.category
+            messageLabel.text = "\(announcement.title)\n\(announcement.date)"
+        } else {
             title = "Campus Events"
             let notificationStatus = notificationsEnabled ? "on" : "off"
-           messageLabel.text = "Hello, \(studentName)! (\(selectedRole)) Notifications: \(notificationStatus)."
-}
+            messageLabel.text = "Welcome, \(studentName)! (\(selectedRole)) Notifications: \(notificationStatus)."
+            
+        }
+    }
 }
