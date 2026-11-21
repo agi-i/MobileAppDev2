@@ -1,10 +1,28 @@
 import UIKit
 class AnnouncementsViewController: UITableViewController {
-    private let announcements = CampusAnnouncement.sampleAnnouncements
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "Campus Announcements"
+    private var context: NSManagedObjectContext {
+    (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
+    override func viewDidLoad() {
+    super.viewDidLoad()
+    title = "Campus Announcements"
+    seedInitialAnnouncementsIfNeeded()
+    loadAnnouncements()
+    }
+    private func seedInitialAnnouncementsIfNeeded() {
+    let request: NSFetchRequest<CampusAnnouncement> = CampusAnnouncement.fetchRequest()
+    let existingCount = (try? context.count(for: request)) ?? 0
+    guard existingCount == 0 else { return }
+    // insert the seed announcements, then:
+    try? context.save()
+    }
+    private func loadAnnouncements() {
+    let request: NSFetchRequest<CampusAnnouncement> = CampusAnnouncement.fetchRequest()
+    request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+    announcements = (try? context.fetch(request)) ?? []
+    tableView.reloadData()
+    }
+    private var announcements: [CampusAnnouncement] = []
     private var selectedAnnouncement: CampusAnnouncement?
     
     override func tableView(_ tableView: UITableView,
