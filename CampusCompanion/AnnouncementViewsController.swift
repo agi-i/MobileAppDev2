@@ -25,6 +25,29 @@ class AnnouncementsViewController: UITableViewController {
     private var announcements: [CampusAnnouncement] = []
     private var selectedAnnouncement: CampusAnnouncement?
     
+    @IBAction func addAnnouncementTapped(_ sender: UIBarButtonItem) {
+    let alert = UIAlertController(title: "New Announcement",
+    message: "Enter a title and category.",
+    preferredStyle: .alert)
+    alert.addTextField { textField in textField.placeholder = "Title" }
+    alert.addTextField { textField in textField.placeholder = "Category" }
+    let saveAction = UIAlertAction(title: "Save", style: .default) { [weak self, weak alert] _ in
+    guard let self = self,
+    let titleText = alert?.textFields?[0].text, !titleText.isEmpty,
+    let categoryText = alert?.textFields?[1].text, !categoryText.isEmpty else { return }
+    let newAnnouncement = CampusAnnouncement(context: self.context)
+    newAnnouncement.title = titleText
+    newAnnouncement.date = DateFormatter.localizedString(from: Date(),
+    dateStyle: .long, timeStyle: .none)
+    newAnnouncement.category = categoryText
+    try? self.context.save()
+    self.loadAnnouncements()
+    }
+    alert.addAction(saveAction)
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+    present(alert, animated: true)
+    }
+    
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
         return announcements.count
